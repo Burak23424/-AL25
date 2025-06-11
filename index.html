@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Burak Can'dan Selamlar</title>
   <style>
     html, body {
-      margin: 0; padding: 0;
-      height: 100%; width: 100%;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
       overflow: hidden;
       background: black;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,7 +17,8 @@
 
     .background {
       position: absolute;
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       background: url('ispir_anadolu_lisesi.jpg') no-repeat center center fixed;
       background-size: cover;
       z-index: 1;
@@ -23,7 +26,8 @@
 
     .stars {
       position: absolute;
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       background: transparent;
       overflow: hidden;
       z-index: 2;
@@ -35,7 +39,7 @@
       height: 2px;
       background: white;
       border-radius: 50%;
-      animation: fall linear infinite;
+      animation: fall linear infinite, sparkle 2s infinite ease-in-out;
     }
 
     @keyframes fall {
@@ -43,9 +47,15 @@
       100% { transform: translateY(100vh); opacity: 0; }
     }
 
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
     .start-button {
       position: absolute;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
       z-index: 4;
       padding: 5vw 10vw;
@@ -62,7 +72,8 @@
 
     .message {
       position: absolute;
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
       font-size: 6vw;
       text-align: center;
@@ -86,7 +97,8 @@
 
     .gallery-container {
       position: fixed;
-      bottom: 2vw; right: 2vw;
+      bottom: 2vw;
+      right: 2vw;
       z-index: 999;
       cursor: pointer;
       display: flex;
@@ -109,13 +121,11 @@
       background-color: rgba(0, 0, 0, 0.7);
       border-radius: 3vw;
       padding: 2vw;
-      display: flex;
       overflow-x: auto;
-      gap: 2vw;
+      white-space: nowrap;
       max-width: 90vw;
-      width: auto;
-      height: auto;
-      flex-wrap: nowrap;
+      gap: 2vw;
+      scroll-behavior: smooth;
     }
 
     .gallery img, .gallery video {
@@ -125,6 +135,7 @@
       border-radius: 2vw;
       transition: transform 0.3s ease;
       cursor: pointer;
+      margin-right: 1vw;
     }
 
     .gallery img:hover, .gallery video:hover {
@@ -150,6 +161,8 @@
       display: block;
       max-width: 90%;
       max-height: 80%;
+      width: auto;
+      height: auto;
       border-radius: 2vw;
     }
 
@@ -183,6 +196,32 @@
       box-shadow: 0 0 20px #00fff7;
       text-shadow: 0 0 15px #00fff7;
     }
+
+    .eq-bars {
+      display: flex;
+      position: fixed;
+      bottom: 1vh;
+      left: 1vh;
+      gap: 0.3vw;
+      z-index: 999;
+    }
+
+    .eq-bar {
+      width: 0.8vw;
+      height: 2vh;
+      background: #00fff7;
+      animation: eqAnim 1s infinite ease-in-out;
+    }
+
+    .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+    .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+    .eq-bar:nth-child(4) { animation-delay: 0.6s; }
+    .eq-bar:nth-child(5) { animation-delay: 0.8s; }
+
+    @keyframes eqAnim {
+      0%, 100% { height: 2vh; }
+      50% { height: 5vh; }
+    }
   </style>
 </head>
 <body>
@@ -193,26 +232,32 @@
   <audio id="bgMusic" loop>
     <source src="giris-muzigi.mp3" type="audio/mpeg">
   </audio>
+  <div class="eq-bars" id="eqBars" style="display: none;">
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+  </div>
   <div class="gallery-container">
     <img class="main-image" src="resim1.jpg" alt="Resim 1" onclick="toggleGallery()">
     <div class="gallery" id="gallery">
       <div class="gallery-title">📸 Galeri</div>
     </div>
   </div>
-  <div id="modal" class="modal">
-    <span class="prev" onclick="changeImage(-1)">&#10094;</span>
-    <img class="modal-content" id="modal-img" src="resim1.jpg">
-    <video class="modal-content" id="modal-video" controls style="display: none;" preload="none"></video>
-    <span class="next" onclick="changeImage(1)">&#10095;</span>
+  <div id="modal" class="modal" onclick="closeModal()">
+    <span class="prev" onclick="changeImage(-1); event.stopPropagation();">&#10094;</span>
+    <img class="modal-content" id="modal-img">
+    <video class="modal-content" id="modal-video" controls style="display: none;"></video>
+    <span class="next" onclick="changeImage(1); event.stopPropagation();">&#10095;</span>
   </div>
-
   <script>
     const starsContainer = document.getElementById('stars');
     for (let i = 0; i < 150; i++) {
       let star = document.createElement('div');
       star.style.left = Math.random() * 100 + 'vw';
+      star.style.top = Math.random() * 100 + 'vh';
       star.style.animationDuration = 2 + Math.random() * 3 + 's';
-      star.style.opacity = Math.random();
       starsContainer.appendChild(star);
     }
 
@@ -248,18 +293,19 @@
     function startSite() {
       document.querySelector('.start-button').style.display = 'none';
       document.getElementById('bgMusic').play();
+      document.getElementById('eqBars').style.display = 'flex';
       showMessage(0);
     }
 
     function toggleGallery() {
       const gallery = document.getElementById('gallery');
-      gallery.style.display = (gallery.style.display === 'none') ? 'flex' : 'none';
+      gallery.style.display = gallery.style.display === 'none' ? 'flex' : 'none';
     }
 
     let currentImageIndex = 0;
     const images = [...Array(30)].map((_, i) => `resim${i + 1}.jpg`);
-
     const gallery = document.getElementById('gallery');
+
     images.forEach((src, index) => {
       const img = document.createElement('img');
       img.src = src;
@@ -268,10 +314,17 @@
       gallery.appendChild(img);
     });
 
-    const videos = Array.from({ length: 15 }, (_, i) => ({
-      src: `video${i + 1}.mp4`,
-      thumbnail: `video${i + 1}-thumbnail.jpg`
-    }));
+    const videos = [
+      { src: 'video1.mp4', thumbnail: 'video1-thumbnail.jpg' },
+      { src: 'video2.mp4', thumbnail: 'video2-thumbnail.jpg' },
+      { src: 'video3.mp4', thumbnail: 'video3-thumbnail.jpg' },
+      { src: 'video4.mp4', thumbnail: 'video4-thumbnail.jpg' },
+      { src: 'video5.mp4', thumbnail: 'video5-thumbnail.jpg' },
+      { src: 'video6.mp4', thumbnail: 'video6-thumbnail.jpg' },
+      { src: 'video7.mp4', thumbnail: 'video7-thumbnail.jpg' },
+      { src: 'video8.mp4', thumbnail: 'video8-thumbnail.jpg' },
+      { src: 'video9.mp4', thumbnail: 'video9-thumbnail.jpg' }
+    ];
 
     videos.forEach(({ src, thumbnail }) => {
       const video = document.createElement('video');
@@ -304,23 +357,16 @@
 
     function closeModal() {
       document.getElementById('modal').style.display = 'none';
+      document.getElementById('modal-video').pause();
       document.getElementById('bgMusic').play();
     }
 
     function changeImage(direction) {
-      currentImageIndex += direction;
-      if (currentImageIndex < 0) currentImageIndex = images.length - 1;
-      if (currentImageIndex >= images.length) currentImageIndex = 0;
+      currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
       openModal(currentImageIndex);
     }
 
-    window.onclick = function(event) {
-      if (event.target === document.getElementById('modal')) {
-        closeModal();
-      }
-    }
-
-    window.onload = function() {
+    window.onload = () => {
       document.getElementById('gallery').style.display = 'none';
     }
   </script>
